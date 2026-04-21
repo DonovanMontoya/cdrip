@@ -13,7 +13,7 @@ pub struct Cli {
 pub enum Commands {
     /// Locate and Rip aiff files from CD
     Rip {
-        /// Output Path( /Desktop/CDName )
+        /// Output Path( /Desktop/CDName)
         #[arg(short, long)]
         path: PathBuf,
     },
@@ -27,7 +27,7 @@ pub enum Commands {
     /// Make flac files from aiff files (Requires ffmpeg)
     Makeflac {
         /// Path to aiff files
-        path: PathBuf,
+        path: Option<PathBuf>,
 
         /// Output directory for flac files (defaults to the input path if not specified)
         output: Option<PathBuf>,
