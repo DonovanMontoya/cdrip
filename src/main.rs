@@ -4,6 +4,7 @@ use clap::Parser;
 
 mod cli;
 mod makeflac;
+mod volumes;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
