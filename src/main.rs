@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 
 mod cli;
-mod makeflac;
+mod export;
 mod volumes;
 
 fn main() -> Result<()> {
@@ -19,10 +19,16 @@ fn main() -> Result<()> {
         } => {
             let resolved = resolve_path(path)?;
             let out = output.unwrap_or_else(|| resolved.clone());
-            makeflac::run(&resolved, &out, delete)?;
+            export::run(&resolved, &out, true, delete)?;
         }
-        Commands::Rip { path } => {
-            println!("Rip not yet implemented for {}", path.display());
+        Commands::Rip {
+            output,
+            convert,
+            delete,
+        } => {
+            let input = resolve_path(None)?;
+            let out = output.unwrap_or_else(|| input.clone());
+            export::run(&input, &out, convert, delete)?;
         }
         Commands::View { media } => {
             println!("View not yet implemented: {:?}", media);

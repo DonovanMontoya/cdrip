@@ -3,7 +3,12 @@ use std::fs::{create_dir_all, remove_file};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-pub fn run(input_path: &Path, output_path: &Path, delete_originals: bool) -> Result<()> {
+pub fn run(
+    input_path: &Path,
+    output_path: &Path,
+    convert_to_flac: bool,
+    delete_originals: bool,
+) -> Result<()> {
     check_ffmpeg()?;
 
     if !output_path.exists() {
@@ -25,6 +30,21 @@ pub fn run(input_path: &Path, output_path: &Path, delete_originals: bool) -> Res
         files.len(),
         output_path.display()
     );
+
+    if !convert_to_flac {
+        for file in &files {
+            let output_file = output_path.join(file.file_name().unwrap());
+            std::fs::copy(file, &output_file)
+                .with_context(|| format!("Failed to copy file {}", file.display()))?;
+            if delete_originals {
+                remove_file(file)
+                    .with_context(|| format!("Failed to delete audio file {}", file.display()))?;
+                println!("Deleted audio file {}", file.display());
+            }
+            println!("Copied {} -> {}", file.display(), output_file.display());
+        }
+        return Ok(());
+    }
 
     for file in &files {
         convert_file(file, output_path)?;
