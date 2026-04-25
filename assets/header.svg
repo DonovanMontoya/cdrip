@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 180" width="860">
+  <defs>
+    <radialGradient id="discGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1C1C1C"/>
+      <stop offset="100%" stop-color="#0A0A0A"/>
+    </radialGradient>
+    <radialGradient id="labelGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1A1A1A"/>
+      <stop offset="100%" stop-color="#111111"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="860" height="180" fill="#0A0A0A"/>
+
+  <!-- Top amber accent -->
+  <rect width="860" height="3" fill="#E8682A"/>
+
+  <!-- Subtle horizontal scan lines -->
+  <rect x="0" y="40" width="860" height="0.5" fill="#141414"/>
+  <rect x="0" y="80" width="860" height="0.5" fill="#141414"/>
+  <rect x="0" y="120" width="860" height="0.5" fill="#141414"/>
+
+  <!-- ── CD DISC (right side, partially clipped) ── -->
+  <g transform="translate(756, 90)">
+    <!-- Outer disc body -->
+    <circle r="80" fill="url(#discGrad)" stroke="#1E1E1E" stroke-width="1.5"/>
+    <!-- Data track rings -->
+    <circle r="74" fill="none" stroke="#141414" stroke-width="0.7"/>
+    <circle r="68" fill="none" stroke="#141414" stroke-width="0.7"/>
+    <circle r="62" fill="none" stroke="#141414" stroke-width="0.7"/>
+    <circle r="56" fill="none" stroke="#141414" stroke-width="0.7"/>
+    <circle r="50" fill="none" stroke="#141414" stroke-width="0.7"/>
+    <circle r="44" fill="none" stroke="#141414" stroke-width="0.7"/>
+    <circle r="38" fill="none" stroke="#181818" stroke-width="0.7"/>
+    <circle r="32" fill="none" stroke="#181818" stroke-width="0.7"/>
+    <!-- Label area -->
+    <circle r="24" fill="url(#labelGrad)" stroke="#282828" stroke-width="1.5"/>
+    <!-- Spindle hole -->
+    <circle r="7" fill="#0A0A0A" stroke="#E8682A" stroke-width="1.8"/>
+    <!-- Iridescent sheen (top-left arc spectrum) -->
+    <path d="M -80,0 A 80,80 0 0,1 -57,-57"
+          fill="none" stroke="#E8682A" stroke-width="7"
+          stroke-linecap="round" opacity="0.32"/>
+    <path d="M -57,-57 A 80,80 0 0,1 0,-80"
+          fill="none" stroke="#FF9944" stroke-width="5"
+          stroke-linecap="round" opacity="0.2"/>
+    <path d="M 0,-80 A 80,80 0 0,1 40,-69"
+          fill="none" stroke="#FFE066" stroke-width="3"
+          stroke-linecap="round" opacity="0.12"/>
+  </g>
+
+  <!-- ── LEFT CONTENT ── -->
+
+  <!-- Main title -->
+  <text x="54" y="114"
+        font-family="'Courier New', Courier, 'Lucida Console', monospace"
+        font-size="84"
+        font-weight="bold"
+        fill="#E8682A"
+        letter-spacing="-2">cdrip</text>
+
+  <!-- Separator line -->
+  <line x1="54" y1="132" x2="626" y2="132" stroke="#1E1E1E" stroke-width="1"/>
+
+  <!-- Tagline -->
+  <text x="57" y="155"
+        font-family="'Courier New', Courier, monospace"
+        font-size="12"
+        fill="#3D3D3D"
+        letter-spacing="5">RIP · CONVERT · PRESERVE</text>
+
+  <!-- Bottom amber accent (dim) -->
+  <rect y="177" width="860" height="3" fill="#E8682A" opacity="0.2"/>
+</svg>
