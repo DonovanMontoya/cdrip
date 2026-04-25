@@ -9,11 +9,13 @@ fn mount_roots() -> Vec<PathBuf> {
 #[cfg(target_os = "linux")]
 fn mount_roots() -> Vec<PathBuf> {
     let mut roots = vec![PathBuf::from("/mnt")];
-    if let Ok(mounts) = std::fs::read_dir("/media") {
-        for entry in mounts.filter_map(|e| e.ok()) {
-            let path = entry.path();
-            if path.is_dir() {
-                roots.push(path);
+    for base in ["/run/media", "/media"] {
+        if let Ok(users) = std::fs::read_dir(base) {
+            for entry in users.filter_map(|e| e.ok()) {
+                let path = entry.path();
+                if path.is_dir() {
+                    roots.push(path);
+                }
             }
         }
     }
