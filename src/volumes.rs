@@ -1,19 +1,38 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use std::path::{Path, PathBuf};
 
-const VOLUMES_ROOT: &str = "/VOLUMES";
+#[cfg(target_os = "macos")]
+fn mount_roots() -> Vec<PathBuf> {
+    vec![PathBuf::from("/Volumes")]
+}
+
+#[cfg(target_os = "linux")]
+fn mount_roots() -> Vec<PathBuf> {
+    let mut roots = vec![PathBuf::from("/mnt")];
+    if let Ok(mounts) = std::fs::read_dir("/media") {
+        for entry in mounts.filter_map(|e| e.ok()) {
+            let path = entry.path();
+            if path.is_dir() {
+                roots.push(path);
+            }
+        }
+    }
+    roots
+}
 
 /// Returns Volumes in the VOLUMES directory with AIFF or AIF audio files
 pub fn find_audio_volumes() -> Result<Vec<PathBuf>> {
     let mut candidates = Vec::new();
 
-    let entries = std::fs::read_dir(VOLUMES_ROOT).context("Failed to read VOLUMES directory")?;
-
-    for entry in entries {
-        let entry = entry?;
-        let path = entry.path();
-        if path.is_dir() && contains_aiff(&path) {
-            candidates.push(path);
+    for root in mount_roots() {
+        let Ok(entries) = std::fs::read_dir(&root) else {
+            continue;
+        };
+        for entry in entries.filter_map(|e| e.ok()) {
+            let path = entry.path();
+            if path.is_dir() && contains_aiff(&path) {
+                candidates.push(path);
+            }
         }
     }
     Ok(candidates)
