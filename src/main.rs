@@ -30,8 +30,11 @@ fn main() -> Result<()> {
             let out = output.unwrap_or_else(|| input.clone());
             export::run(&input, &out, convert, delete)?;
         }
-        Commands::View { media } => {
-            println!("View not yet implemented: {:?}", media);
+        Commands::View {} => {
+            let volumes = volumes::find_audio_volumes()?;
+            for vol in volumes {
+                println!("{}", vol.display());
+            }
         }
     }
     Ok(())
