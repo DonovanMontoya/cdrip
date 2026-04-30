@@ -22,6 +22,14 @@ fn mount_roots() -> Vec<PathBuf> {
     roots
 }
 
+#[cfg(target_os = "windows")]
+fn mount_roots() -> Vec<PathBuf> {
+    ('A'..='Z')
+        .map(|letter| PathBuf::from(format!("{letter}:\\")))
+        .filter(|path| path.exists())
+        .collect()
+}
+
 /// Returns Volumes in the VOLUMES directory with AIFF or AIF audio files
 pub fn find_audio_volumes() -> Result<Vec<PathBuf>> {
     let mut candidates = Vec::new();

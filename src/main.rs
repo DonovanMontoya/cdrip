@@ -27,8 +27,7 @@ fn main() -> Result<()> {
             delete,
         } => {
             let input = resolve_path(None)?;
-            let out = output.unwrap_or_else(|| input.clone());
-            export::run(&input, &out, convert, delete)?;
+            export::run(&input, &output, convert, delete)?;
         }
         Commands::View {} => {
             let volumes = volumes::find_audio_volumes()?;

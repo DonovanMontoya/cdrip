@@ -16,8 +16,8 @@ pub enum Commands {
 
     /// Locate and Rip aiff files from CD
     Rip {
-        /// Output directory for ripped files (e.g. ~/Desktop/AlbumName)
-        output: Option<PathBuf>,
+        /// Output directory for ripped files (e.g., ~/Desktop/AlbumName)
+        output: PathBuf,
 
         /// Convert ripped files to FLAC (default: copy as AIFF)
         #[arg(short, long, default_value_t = false)]
