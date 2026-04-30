@@ -9,7 +9,7 @@
 [![Nightly](https://img.shields.io/github/actions/workflow/status/DonovanMontoya/CD-Rip/nightly-release.yml?label=nightly&style=flat-square&color=%23222222&logo=github-actions&logoColor=white)](https://github.com/DonovanMontoya/CD-Rip/releases)
 ![macOS](https://img.shields.io/badge/macOS-✓-%23181818?style=flat-square&logo=apple&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-✓-%23181818?style=flat-square&logo=linux&logoColor=white)
-![Windows](https://img.shields.io/badge/Windows-✓-%23555555?style=flat-square&logo=windows&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-✓-%23181818?style=flat-square&logo=windows&logoColor=white)
 
 </div>
 
