@@ -6,7 +6,7 @@
 
 [![Rust](https://img.shields.io/badge/Rust-2024-%23E8682A?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org)
 [![Release](https://img.shields.io/github/v/tag/DonovanMontoya/CD-Rip?label=release&style=flat-square&color=%23E8682A&logo=github&logoColor=white)](https://github.com/DonovanMontoya/CD-Rip/releases)
-[![Nightly](https://img.shields.io/github/actions/workflow/status/DonovanMontoya/CD-Rip/nightly-release.yml?label=nightly&style=flat-square&color=%23222222&logo=github-actions&logoColor=white)](https://github.com/DonovanMontoya/CD-Rip/releases)
+[![Nightly](https://img.shields.io/github/actions/workflow/status/DonovanMontoya/CD-Rip/nightly-release.yml?label=nightly&style=flat-square&logo=github-actions&logoColor=white)](https://github.com/DonovanMontoya/CD-Rip/actions/workflows/nightly-release.yml)
 ![macOS](https://img.shields.io/badge/macOS-✓-%23181818?style=flat-square&logo=apple&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-✓-%23181818?style=flat-square&logo=linux&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-✓-%23181818?style=flat-square&logo=windows&logoColor=white)
