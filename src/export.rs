@@ -39,7 +39,8 @@ pub fn run(
 
     if !convert_to_flac {
         for file in &files {
-            let output_file = output_path.join(file.file_name().unwrap());
+            let output_file =
+                output_path.join(file.file_name().context("Failed to get file name")?);
             std::fs::copy(file, &output_file)
                 .with_context(|| format!("Failed to copy file {}", file.display()))?;
             if delete_originals {
