@@ -34,7 +34,7 @@ pub fn run(
     println!(
         "Found {} audio files in {}",
         files.len(),
-        output_path.display()
+        input_path.display()
     );
 
     if !convert_to_flac {
