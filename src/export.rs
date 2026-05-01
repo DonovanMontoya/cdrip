@@ -9,14 +9,20 @@ pub fn run(
     convert_to_flac: bool,
     delete_originals: bool,
 ) -> Result<()> {
-    check_ffmpeg()?;
-
     if !output_path.exists() {
         create_dir_all(output_path)
             .with_context(|| format!("Failed to create output path {}", output_path.display()))?;
     }
 
     check_directory_writable(output_path)?;
+
+    // Check if the input path exists and is a directory.
+    if !input_path.exists() {
+        bail!("Input path {} does not exist.", input_path.display());
+    }
+    if !input_path.is_dir() {
+        bail!("Input path {} is not a directory.", input_path.display());
+    }
 
     let files = find_aiff_files(input_path)?;
 
@@ -46,6 +52,7 @@ pub fn run(
         return Ok(());
     }
 
+    check_ffmpeg()?;
     for file in &files {
         convert_file(file, output_path)?;
 
@@ -103,13 +110,13 @@ fn find_aiff_files(dir: &Path) -> Result<Vec<PathBuf>> {
         let path = entry.path();
 
         // Check if it's a file with .aiff or .aif extension
-        if path.is_file() {
-            if let Some(ext) = path.extension() {
+        if path.is_file()
+            && path.extension().is_some_and(|ext| {
                 let ext_lower = ext.to_string_lossy().to_lowercase();
-                if ext_lower == "aiff" || ext_lower == "aif" {
-                    files.push(path);
-                }
-            }
+                ext_lower == "aiff" || ext_lower == "aif"
+            })
+        {
+            files.push(path);
         }
     }
 
