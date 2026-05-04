@@ -9,13 +9,6 @@ pub fn run(
     convert_to_flac: bool,
     delete_originals: bool,
 ) -> Result<()> {
-    if !output_path.exists() {
-        create_dir_all(output_path)
-            .with_context(|| format!("Failed to create output path {}", output_path.display()))?;
-    }
-
-    check_directory_writable(output_path)?;
-
     // Check if the input path exists and is a directory.
     if !input_path.exists() {
         bail!("Input path {} does not exist.", input_path.display());
@@ -23,6 +16,13 @@ pub fn run(
     if !input_path.is_dir() {
         bail!("Input path {} is not a directory.", input_path.display());
     }
+
+    if !output_path.exists() {
+        create_dir_all(output_path)
+            .with_context(|| format!("Failed to create output path {}", output_path.display()))?;
+    }
+
+    check_directory_writable(output_path)?;
 
     let files = find_aiff_files(input_path)?;
 
@@ -43,12 +43,12 @@ pub fn run(
                 output_path.join(file.file_name().context("Failed to get file name")?);
             std::fs::copy(file, &output_file)
                 .with_context(|| format!("Failed to copy file {}", file.display()))?;
+            println!("Copied {} -> {}", file.display(), output_file.display());
             if delete_originals {
                 remove_file(file)
                     .with_context(|| format!("Failed to delete audio file {}", file.display()))?;
                 println!("Deleted audio file {}", file.display());
             }
-            println!("Copied {} -> {}", file.display(), output_file.display());
         }
         return Ok(());
     }
@@ -140,12 +140,12 @@ fn convert_file(input_path: &Path, output_path: &Path) -> Result<PathBuf> {
     );
 
     let status = Command::new("ffmpeg")
+        .arg("-y")
         .arg("-i")
         .arg(input_path)
         .arg("-c:a")
         .arg("flac")
         .arg(&output_file)
-        .arg("-y")
         .status()
         .context("Failed to run ffmpeg. Is it installed?")?;
 
