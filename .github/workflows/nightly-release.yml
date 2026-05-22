@@ -12,8 +12,43 @@ permissions:
   contents: write  # Required for creating releases and tags
 
 jobs:
+  check-changes:
+    name: Check for Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.compare.outputs.has_changes }}
+      current_sha: ${{ steps.compare.outputs.current_sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compare with last nightly release
+        id: compare
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CURRENT_SHA=$(git rev-parse HEAD)
+          echo "current_sha=$CURRENT_SHA" >> $GITHUB_OUTPUT
+
+          LAST_SHA=$(gh release list --repo "$GITHUB_REPOSITORY" --json tagName,body --limit 20 \
+            | jq -r '[.[] | select(.tagName | startswith("nightly-"))] | first | .body' \
+            | grep -oP '(?<=commit )[0-9a-f]+' | head -1 || true)
+
+          if [ -z "$LAST_SHA" ]; then
+            echo "No previous nightly found, proceeding with build"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          elif git merge-base --is-ancestor "$LAST_SHA" HEAD && [ "$(git rev-parse "$LAST_SHA" 2>/dev/null || echo '')" = "$LAST_SHA" ] && [ "$LAST_SHA" = "$CURRENT_SHA" ]; then
+            echo "No new commits since last nightly ($LAST_SHA), skipping build"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "New commits since last nightly, proceeding with build"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
   create-release:
     name: Create Nightly Release
+    needs: check-changes
+    if: needs.check-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.tag.outputs.tag_name }}
@@ -60,7 +95,8 @@ jobs:
 
   build:
     name: Build ${{ matrix.platform }}
-    needs: create-release
+    needs: [check-changes, create-release]
+    if: needs.check-changes.outputs.has_changes == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -145,7 +181,8 @@ jobs:
 
   cleanup:
     name: Cleanup Old Releases
-    needs: build
+    needs: [check-changes, build]
+    if: needs.check-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Delete old nightly releases
