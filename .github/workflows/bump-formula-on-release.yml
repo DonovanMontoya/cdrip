@@ -1,0 +1,79 @@
+name: Bump Brew Formula on Release
+
+# Fully-automatic Homebrew formula bump. Fires whenever a release is published
+# (e.g. created from the GitHub UI or `gh release create`). The manual
+# "Update Brew Formula" workflow bumps the formula itself, so releases it
+# creates via GITHUB_TOKEN won't re-trigger this run (Actions suppresses
+# workflow events from GITHUB_TOKEN) — no double bump.
+
+on:
+  release:
+    types: [published]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  bump-formula:
+    name: Bump Formula
+    runs-on: ubuntu-latest
+    # Only stable v* releases — skip nightly-* and any other tag scheme.
+    if: startsWith(github.event.release.tag_name, 'v')
+    steps:
+      - name: Checkout tap repo
+        uses: actions/checkout@v4
+        with:
+          repository: DonovanMontoya/homebrew-ipod-tools
+          path: tap
+          token: ${{ secrets.TAP_REPO_TOKEN }}
+
+      - name: Set tarball URL
+        id: tarball
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          echo "url=https://github.com/DonovanMontoya/CD-Rip/archive/refs/tags/${VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
+
+      - name: Download tarball
+        run: curl -fL "${{ steps.tarball.outputs.url }}" -o source.tar.gz
+
+      - name: Compute sha256
+        id: shasum
+        run: echo "sha=$(shasum -a 256 source.tar.gz | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+      - name: Update formula
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+          SHA: ${{ steps.shasum.outputs.sha }}
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          version = os.environ["VERSION"]
+          sha = os.environ["SHA"]
+          path = pathlib.Path("tap/Formula/cdrip.rb")
+          text = path.read_text()
+          # Path-agnostic match so casing (CD-Rip vs cdrip) never strands the url.
+          text = re.sub(
+              r'url "https://github\.com/[^"]+/archive/refs/tags/[^"]+\.tar\.gz"',
+              f'url "https://github.com/DonovanMontoya/CD-Rip/archive/refs/tags/{version}.tar.gz"',
+              text,
+          )
+          text = re.sub(r'sha256 "[0-9a-fA-F]+"', f'sha256 "{sha}"', text)
+          path.write_text(text)
+          PY
+
+      - name: Commit formula update
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          if git -C tap diff --quiet; then
+            echo "Formula already up to date for ${VERSION}."
+            exit 0
+          fi
+          git -C tap add Formula/cdrip.rb
+          git -C tap -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Update Homebrew formula for ${VERSION}"
+          git -C tap push

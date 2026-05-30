@@ -118,8 +118,12 @@ jobs:
           sha = os.environ["SHA"]
           path = pathlib.Path("tap/Formula/cdrip.rb")
           text = path.read_text()
+          # Match any github tarball url path so the bump works regardless of
+          # repo-name casing (CD-Rip vs cdrip) — the previous pattern hard-coded
+          # "CD-Rip" and never matched the formula's lowercase url, leaving the
+          # url pinned to an old tag while only the sha256 advanced.
           text = re.sub(
-              r'url "https://github.com/DonovanMontoya/CD-Rip/archive/refs/tags/[^"]+\.tar\.gz"',
+              r'url "https://github\.com/[^"]+/archive/refs/tags/[^"]+\.tar\.gz"',
               f'url "https://github.com/DonovanMontoya/CD-Rip/archive/refs/tags/{version}.tar.gz"',
               text,
           )
