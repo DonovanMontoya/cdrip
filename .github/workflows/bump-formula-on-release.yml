@@ -10,9 +10,6 @@ on:
   release:
     types: [published]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   bump-formula:
     name: Bump Formula
@@ -21,7 +18,7 @@ jobs:
     if: startsWith(github.event.release.tag_name, 'v')
     steps:
       - name: Checkout tap repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: DonovanMontoya/homebrew-ipod-tools
           path: tap

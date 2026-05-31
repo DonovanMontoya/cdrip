@@ -12,9 +12,6 @@ on:
         required: false
         type: string
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 permissions:
   contents: write
 
@@ -24,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.version }}
           name: ${{ inputs.version }}
@@ -52,7 +49,7 @@ jobs:
             target: x86_64-unknown-linux-gnu
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -72,7 +69,7 @@ jobs:
           tar czf "../../../cdrip-${VERSION}-${PLATFORM}.tar.gz" cdrip
 
       - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: cdrip-${{ inputs.version }}-${{ matrix.platform }}
           path: cdrip-${{ inputs.version }}-${{ matrix.platform }}.tar.gz
@@ -83,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout tap repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: DonovanMontoya/homebrew-ipod-tools
           path: tap
