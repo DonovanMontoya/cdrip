@@ -1,3 +1,4 @@
+use crate::volumes::has_aiff_extension;
 use anyhow::{Context, Result, bail};
 use std::fs::{create_dir_all, remove_file};
 use std::path::{Path, PathBuf};
@@ -110,13 +111,7 @@ fn find_aiff_files(dir: &Path) -> Result<Vec<PathBuf>> {
         let entry = entry?;
         let path = entry.path();
 
-        // Check if it's a file with .aiff or .aif extension
-        if path.is_file()
-            && path.extension().is_some_and(|ext| {
-                let ext_lower = ext.to_string_lossy().to_lowercase();
-                ext_lower == "aiff" || ext_lower == "aif"
-            })
-        {
+        if path.is_file() && has_aiff_extension(&path) {
             files.push(path);
         }
     }

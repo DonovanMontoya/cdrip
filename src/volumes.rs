@@ -48,19 +48,21 @@ pub fn find_audio_volumes() -> Result<Vec<PathBuf>> {
     Ok(candidates)
 }
 
+/// True if `path` ends in `.aiff` or `.aif`, ignoring case.
+pub(crate) fn has_aiff_extension(path: &Path) -> bool {
+    path.extension().is_some_and(|ext| {
+        let ext = ext.to_string_lossy().to_lowercase();
+        ext == "aiff" || ext == "aif"
+    })
+}
+
 /// Returns true if the directory contains (at least one) AIFF or AIF file(s)
 fn contains_aiff(dir: &Path) -> bool {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return false; //Unable to read directory -- Skip
     };
 
-    entries.filter_map(|e| e.ok()).any(|e| {
-        let path = e.path();
-        if let Some(ext) = path.extension() {
-            let ext = ext.to_string_lossy().to_lowercase();
-            ext == "aiff" || ext == "aif"
-        } else {
-            false
-        }
-    })
+    entries
+        .filter_map(|e| e.ok())
+        .any(|e| has_aiff_extension(&e.path()))
 }
